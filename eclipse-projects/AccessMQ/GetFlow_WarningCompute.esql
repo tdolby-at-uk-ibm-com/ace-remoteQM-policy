@@ -1,0 +1,11 @@
+
+
+CREATE COMPUTE MODULE GetFlow_WarningCompute
+	CREATE FUNCTION Main() RETURNS BOOLEAN
+	BEGIN
+		SET OutputRoot.Properties = InputRoot.Properties;
+		-- TODO: Add warning code
+		SET OutputRoot.JSON.Data.result = 'warning from MQGET';
+		RETURN TRUE;
+	END;
+END MODULE;

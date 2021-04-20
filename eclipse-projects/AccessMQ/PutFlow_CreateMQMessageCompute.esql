@@ -1,0 +1,10 @@
+
+
+CREATE COMPUTE MODULE PutFlow_CreateMQMessageCompute
+	CREATE FUNCTION Main() RETURNS BOOLEAN
+	BEGIN
+		SET OutputRoot.Properties = InputRoot.Properties;
+		SET OutputRoot.JSON.Data.messageText = 'This is an MQ message from putFlow';
+		RETURN TRUE;
+	END;
+END MODULE;

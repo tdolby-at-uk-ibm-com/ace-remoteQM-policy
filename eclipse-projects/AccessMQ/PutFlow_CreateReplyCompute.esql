@@ -1,0 +1,10 @@
+
+
+CREATE COMPUTE MODULE PutFlow_CreateReplyCompute
+	CREATE FUNCTION Main() RETURNS BOOLEAN
+	BEGIN
+		SET OutputRoot.Properties = InputRoot.Properties;
+		SET OutputRoot.JSON.Data.result = 'successfully put message';
+		RETURN TRUE;
+	END;
+END MODULE;

@@ -1,0 +1,10 @@
+
+
+CREATE COMPUTE MODULE GetFlow_NoMessageCompute
+	CREATE FUNCTION Main() RETURNS BOOLEAN
+	BEGIN
+		SET OutputRoot.Properties = InputRoot.Properties;
+		SET OutputRoot.JSON.Data.result = 'no message on queue';
+		RETURN TRUE;
+	END;
+END MODULE;
