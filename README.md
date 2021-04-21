@@ -29,17 +29,33 @@ overrides/server.conf.yaml also); this would involve changing the default of
 ```
 to something similar to this
 ```
-remoteDefaultQueueManager: '{DefaultPolicies}:Default'  # Specify an MQEndpoint policy in the format {policy project}:policy
+remoteDefaultQueueManager: '{MQOnCloudPolicies}:MQoC'  # Specify an MQEndpoint policy in the format {policy project}:policy
 ```
-which will cause the server to use the policy named "Default" in the "DefaultPolicies" policy project. Note that this 
+which will cause the server to use the policy named "MQoC" in the "MQOnCloudPolicies" policy project. Note that this 
 setting will not make use of the "policyProject" setting under the "Defaults" section of server.conf.yaml; it must be
-qualified with a policy project in braces as shown.
+qualified with a policy project in braces as shown and cannot be simply "MQoC".
 
-## Explain how policies are actually just XML files on disk that can be copied, generated, modified, etc without needing a BAR file
- TODO
+## Policies as XML files on disk
+MQEndpoint policies are XML files containing configuration data, and must be placed in a directory that has a policy.descriptor
+file (see eclipse-projects/MQOnCloudPolicies in this repo), but they are not required to be deployed in a BAR file nor created
+using a toolkit. As long as the format is correct, then they can be generated from scripts, from templates and the "sed" 
+command, or any other mechanism which provides the correct data on disk before the server starts.
+
+Some of the projects in this repo use a toolkit-created policy project with policies, and others create them either during 
+the image build itself, or at container start time. BAR files do not have to be used anywhere in the process.
  
 ## Overrides versus run
- TODO
+Both the remoteDefaultQueueManager setting and the MQEndpoint policies themselves can be placed in the "overrides" directory
+as well as (or instead of) the "run" directory. 
+
+If policies are present in both directories, as shown here
+```
+/home/aceuser/ace-server/overrides/MQOnCloudPolicies/policy.descriptor
+/home/aceuser/ace-server/overrides/MQOnCloudPolicies/MQoC.policyxml
+/home/aceuser/ace-server/run/MQOnCloudPolicies/policy.descriptor
+/home/aceuser/ace-server/run/MQOnCloudPolicies/MQoC.policyxml
+```
+then the overrides version is used (standard practice for ACE), and the same is true for the server.conf.yaml in overrides.
 
 ## Credentials; need for setdbparms or mqsicredentials before server starts up
  TODO
