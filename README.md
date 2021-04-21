@@ -2,6 +2,12 @@
 Non-production examples of remote default queue manager policies for ACE v11 servers; these examples are intended to illustrate 
 how such policies are used and some common errors, but should not be viewed as best practice for actual deployments.
 
+Container | Description | Use
+| :--- | :--- | :--- |
+[simple-server](README-simple-server.md) | Most basic with no MQ | Sanity check for image build before proceeding to MQ images
+[simple-baked-everything](README-simple-baked-everything.md) | Baked-in MQ config | Local testing with MQ; contains credentials in image
+
+
 ## Remote default QM overview
 ACE and predecessor products have always been able to use MQ, both for explicit messaging (MQ nodes in a flow) and implicit 
 usage for state storage (Aggregate nodes, etc), and historically this required a local queue manager to be co-located with 
