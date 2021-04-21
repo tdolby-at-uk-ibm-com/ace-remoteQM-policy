@@ -1,3 +1,6 @@
+# Copyright (c) 2021 Open Technologies for Integration
+# Licensed under the MIT license (see LICENSE for details)
+
 FROM ubuntu:20.04
 MAINTAINER Trevor Dolby <tdolby@uk.ibm.com> (@tdolby)
 
