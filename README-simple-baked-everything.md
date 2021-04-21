@@ -48,6 +48,7 @@ main checker destroyed before initialisation completed, latest stage was MQ defa
 2021-04-21 14:02:25.416224: BIP2677E: Failed to make a client connection to queue manager 'MQoC' using hostname 'mqoc-419f.qm.eu-gb.mq.appdomainWRONGWRONG.cloud' on port '31175': MQCC=2; MQRC=2538. 
 2021-04-21 14:02:25.416298: BIP1992I: Integration server 'ace-server' stopped. 
 ```
+In this case, the credentials will not have been used, and may also be invalid, but the server never had a chance to find out.
 
 ### Invalid user/password
 Incorrect user/password information will lead to the initial connection failing with an 
