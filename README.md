@@ -57,11 +57,31 @@ If policies are present in both directories, as shown here
 ```
 then the overrides version is used (standard practice for ACE), and the same is true for the server.conf.yaml in overrides.
 
-## Credentials; need for setdbparms or mqsicredentials before server starts up
- TODO
+## Credentials
+Some MQEndpoint policies rely on user/password information for connections to remote queue managers, and these can be
+provided using mqsisetdbparms or mqsicredentials to create credentials that can be referenced from the "securityIdentity"
+section of the policy. These credentials must be in place before the server starts, and cannot be added later.
 
-## Startup for remote default; when the server does different things, what errors can happen when, etc.
- TODO
+Note that not all MQ connections require user/password information: TLS mutual authentication may be used instead, and
+that would be configured using other mechanisms. This repo uses user/password for connections because it is one of the
+easiest ways to use MQ on Cloud, which is itself one of the easiest ways to experiment with remote queue managers and ACE.
+
+## Startup sequence
+When using a remote default queue manager, the server will attempt to connect immediately on startup to determine the 
+queue manager's CCSID setting, and will shut down if the connection attempt is unsuccessful. This process involves a
+number of steps:
+
+ - The server will attempt to find the named policy in overrides (e.g., "overrides/myProject/myPolicy.policyxml")
+     - If that is not successful, the server will look in the run directory (e.g., "run/myProject/myPolicy.policyxml")
+     - If neither of those policies can be read, then the server issues a BIP1388 message and exits.
+ - Assuming the policy has been read, then the server attempts to read required credentials, and will exit if they are unavailable.
+ - The server then calls MQCONNX to connect, passing the policy and credential information to MQ.
+ - If the connection is successful, then the server reads the CCSID from the queue manager, and continues to start as normal.
+
+The initial startup sequence is where most (if not all) errors in configuration will be encountered, and this can pose
+some challenges in a container-based environment where the container exits if the server fails to start up. This repo 
+contains various different approaches to configuration, with various error cases documented in (?? TODO create an errors page).
 
 ## Auto-shutdown
- TODO
+The server will shut down if the default queue manager becomes unavailable, regardless of whether the default queue manager
+is local or remote. 
