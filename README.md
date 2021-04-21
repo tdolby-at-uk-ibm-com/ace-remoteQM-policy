@@ -11,7 +11,8 @@ configuration on the MQ nodes, and also allowing remote queue managers for Aggre
  
 Product docs at https://www.ibm.com/docs/en/app-connect/11.0.0?topic=mq-using-remote-default-queue-manager explain this in
 more detail, and https://community.ibm.com/community/user/integration/viewdocument/when-does-ace-need-a-local-mq-serve also
-describes when a local queue manager might still be needed.
+describes when a local queue manager might still be needed. Note that this capability is currently (as of ACE 11.0.0.12) only
+available for independent servers.
 
 For the MQ nodes, the configuration is the same as it would be for a local default queue manager:
 
@@ -20,10 +21,21 @@ For the MQ nodes, the configuration is the same as it would be for a local defau
 and although the properties say "Local queue manager" for historical reasons, the node will in fact use a remote default
 queue manager (and will fail to start if no queue manager (either local or remote) is configured).
  
-## Explain how policies are actually just XML files on disk that can be copied, generated, modified, etc without needing a BAR file
- TODO
- 
 ## server.conf.yaml example
+Enabling a remote default queue manager requires setting remoteDefaultQueueManager in server.conf.yaml (could be set in 
+overrides/server.conf.yaml also); this would involve changing the default of
+```
+#remoteDefaultQueueManager: ''  # Specify an MQEndpoint policy in the format {policy project}:policy
+```
+to something similar to this
+```
+remoteDefaultQueueManager: '{DefaultPolicies}:Default'  # Specify an MQEndpoint policy in the format {policy project}:policy
+```
+which will cause the server to use the policy named "Default" in the "DefaultPolicies" policy project. Note that this 
+setting will not make use of the "policyProject" setting under the "Defaults" section of server.conf.yaml; it must be
+qualified with a policy project in braces as shown.
+
+## Explain how policies are actually just XML files on disk that can be copied, generated, modified, etc without needing a BAR file
  TODO
  
 ## Overrides versus run
