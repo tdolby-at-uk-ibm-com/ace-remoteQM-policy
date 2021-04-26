@@ -62,3 +62,16 @@ main checker destroyed before initialisation completed, latest stage was MQ defa
 2021-04-21 13:59:37.404952: BIP2677E: Failed to make a client connection to queue manager 'MQoC' using hostname 'mqoc-419f.qm.eu-gb.mq.appdomain.cloud' on port '31175': MQCC=2; MQRC=2035. 
 2021-04-21 13:59:37.405016: BIP1992I: Integration server 'ace-server' stopped. 
 ```
+
+### Invalid QM name
+Incorrect queue manager information will lead to the initial connection failing with an 
+MQ code of 2058 (MQRC_Q_MGR_NAME_ERROR):
+```
+.....2021-04-21 13:59:23.306262: .2021-04-21 13:59:23.306478: BIP1990I: Integration server 'ace-server' starting initialization; version '11.0.0.12' (64-bit) 
+.................................node.js process.on('exit') event emitted with exitCode of 0
+main checker destroyed before initialisation completed, latest stage was MQ default CCSID, pid 1, tid 1, attempted stage was 40 and 39 stages completed
+2021-04-26 13:20:01.189568: BIP2116E: IBM App Connect Enterprise internal error: diagnostic information 'Fatal Error; exception thrown before initialisation completed', 'MQ default CCSID', '1', '1', '40', '39'. 
+2021-04-26 13:20:01.189646: BIP2203E: An integration server has encountered a problem whilst starting. 
+2021-04-26 13:20:01.189683: BIP2677E: Failed to make a client connection to queue manager 'wrongQM' using hostname 'mqoc-419f.qm.eu-gb.mq.appdomain.cloud' on port '31175': MQCC=2; MQRC=2058. 
+2021-04-26 13:20:01.189737: BIP1992I: Integration server 'ace-server' stopped. 
+```
