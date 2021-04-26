@@ -1,25 +1,25 @@
-## simple-baked-everything container image
+## simple-fried-userpw container image
 
 This image is built with ACE v11 Developer Edition and an MQ v9 client, with a sample application unpacked
-into the work directory plus an MQ policy and credentials. The [Dockerfile](Dockerfile.simple-baked-everything) 
-requires several build arguments:
- - LICENSE=accept 
- - MQUSER=a valid MQ userid
- - MQPASS=a matching MQ password
+into the work directory plus an MQ policy. The [Dockerfile](Dockerfile.simple-fried-userpw) requires a
+build argument of LICENSE=accept in order to build successfully, and downloads the required software from
+IBM download sites.
 
 Before building, it is usually necessary to customise the hostname, port, and queue manager name in the 
 [MQoC policy](eclipse-projects/MQOnCloudPolicies/MQoC.policyxml) to avoid connection errors on startup.
 
-Note that this image will contain the credentials for the MQ user, and these may be visible in the resulting 
-Docker image even though they appear to be used and discarded in the Docckerfile itself. This may be appropriate
-for local testing, but it would be most unwise to publish the resulting image to a public registry on Dockerhub 
-(for example).
-
+Note that as this image does not contain the credentials for the MQ user, the user/pw information must be
+passed it at container startup. Environment variables are used for this purpose, making it very easy to
+see how the information is passed and used, but most container management systems will have other secure
+ways to handle similar information. The hostname, port number, and queue manager name are baked into the
+image at build time, and so that information is visible to anyone who can access the container image; this
+information is much less confidential than user/pw information, but it may not be desirable to have it
+available in a public registry on Dockerhub.
 
 Instructions are included at the top of the Dockerfile, but the essential commands are of the form
 ```
-docker build -t simple-baked-everything --build-arg LICENSE=accept --build-arg MQUSER=user --build-arg MQPASS=pwd -f Dockerfile .
-docker run -p 7600:7600 -p 7800:7800 --rm -ti simple-baked-everything
+docker build -t simple-fried-userpw --build-arg LICENSE=accept -f Dockerfile .
+docker run -e MQUSER=user -e MQPASS=pwd -p 7600:7600 -p 7800:7800 --rm -ti simple-fried-userpw
 ```
 at which point it is possible to use curl (or other equivalent) to run the flows to ensure MQ connectivity 
 has been successful; the flows listen on URLs /putFlow and /getFlow and behave as follows (using SYSTEM.DEFAULT.LOCAL.QUEUE):

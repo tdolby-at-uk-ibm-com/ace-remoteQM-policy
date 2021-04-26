@@ -1,0 +1,70 @@
+# Copyright (c) 2021 Open Technologies for Integration
+# Licensed under the MIT license (see LICENSE for details)
+
+FROM ubuntu:20.04
+MAINTAINER Trevor Dolby <tdolby@uk.ibm.com> (@tdolby)
+
+# Dockerfile for building an ACE server image with an MQ client and MQEndpoint policy plus flows to interact with MQ.
+#
+# The flows use SYSTEM.DEFAULT.LOCAL.QUEUE and rely on the remoteDefaultQueueManager policy setting for
+# MQ connectivity. The policy is called MQoC, and is copied in from eclipse-projects/MQOnCloudPolicies/MQoC.policyxml
+# during the image build process, baking in the details.
+#
+# User/password information is provided as environment variables at runtime, avoiding baking in security infomration.
+# Many container systems will have other mechanisms for passing in security information (Kubernetes secrets, etc) and
+# the environment variable approach used in this file is for illustration purposes only.
+#
+# The approach used here could be extended to include fried host/port/qmname information also, but in this case those
+# values are baked into the image.
+#
+# The build uses MQ 9.1.0.0 by default, but can be changed to 9.2.2.0 (or any other version) by changing MQ_DOWNLOAD_URL.
+#
+# Build and run:
+#
+# docker build -t simple-fried-userpw --build-arg LICENSE=accept -f Dockerfile .
+# docker run -e MQUSER=user -e MQPASS=pwd -p 7600:7600 -p 7800:7800 --rm -ti simple-fried-userpw
+
+# Customise via build arguments if desired
+ARG DOWNLOAD_URL=http://public.dhe.ibm.com/ibmdl/export/pub/software/websphere/integration/11.0.0.12-ACE-LINUX64-DEVELOPER.tar.gz
+ARG MQ_DOWNLOAD_URL=http://public.dhe.ibm.com/ibmdl/export/pub/software/websphere/messaging/mqdev/redist/9.1.0.0-IBM-MQC-Redist-LinuxX64.tar.gz
+
+# Change this from command line as above
+ARG LICENSE=reject
+
+# Prevent errors about having no terminal when using apt-get
+ENV DEBIAN_FRONTEND noninteractive
+RUN apt-get update && apt-get install -y --no-install-recommends curl
+
+# Install MQ client libraries
+RUN mkdir /opt/mqm && curl ${MQ_DOWNLOAD_URL} | tar zx --exclude=tools --directory /opt/mqm
+
+# Install ACE v11 and accept the license (if the build arg LICENSE is set to "accept")
+RUN mkdir /opt/ibm && curl ${DOWNLOAD_URL} | tar zx --exclude=tools --directory /opt/ibm && \
+    mv /opt/ibm/ace-11.* /opt/ibm/ace-11 && /opt/ibm/ace-11/ace make registry global ${LICENSE} license silently
+
+# Create a user to run as, create the ace workdir, and chmod script files
+RUN useradd --uid 1001 --create-home --home-dir /home/aceuser --shell /bin/bash -G mqbrkrs,sudo aceuser \
+  && su - aceuser -c "export LICENSE=accept && . /opt/ibm/ace-11/server/bin/mqsiprofile && mqsicreateworkdir /home/aceuser/ace-server" \
+  && echo ". /opt/ibm/ace-11/server/bin/mqsiprofile" >> /home/aceuser/.bashrc
+
+# aceuser
+USER 1001
+
+# Projects and policies
+ADD --chown=1001:mqbrkrs eclipse-projects /tmp/eclipse-projects
+
+# Pull in flows; would be good if we didn't need the BAR file!
+RUN bash -c ". /opt/ibm/ace-11/server/bin/mqsiprofile && \
+    mqsipackagebar -w /tmp/eclipse-projects -a /tmp/AccessMQ.bar -k AccessMQ && \ 
+    mqsibar -c -w /home/aceuser/ace-server -a /tmp/AccessMQ.bar"
+
+# Copy in policy and update server.conf.yaml; note that the MQ host and port are baked in, which is not
+# ideal for anything other than development use.
+RUN bash -c "cp -r /tmp/eclipse-projects/MQOnCloudPolicies /home/aceuser/ace-server/run/ && \
+    sed -i \"s/#remoteDefaultQueueManager: ''/remoteDefaultQueueManager: '{MQOnCloudPolicies}:MQoC'/g\" /home/aceuser/ace-server/server.conf.yaml"
+
+# Set entrypoint to run the server; printing out the contents of the work directory aids debugging
+ENTRYPOINT ["bash", "-c", ". /opt/ibm/ace-11/server/bin/mqsiprofile && \
+ mqsisetdbparms --work-dir /home/aceuser/ace-server --resource mq::mqCredentials -u ${MQUSER} -p ${MQPASS} && \
+ find /home/aceuser/ace-server -type f -print && \
+ IntegrationServer -w /home/aceuser/ace-server"]
