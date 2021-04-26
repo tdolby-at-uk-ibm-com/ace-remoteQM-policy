@@ -7,7 +7,7 @@ requires several build arguments:
  - MQUSER=a valid MQ userid
  - MQPASS=a matching MQ password
 
-Before building, it is usually necessary to customise the hostname and port in the 
+Before building, it is usually necessary to customise the hostname, port, and queue manager name in the 
 [MQoC policy](eclipse-projects/MQOnCloudPolicies/MQoC.policyxml) to avoid connection errors on startup.
 
 Note that this image will contain the credentials for the MQ user, and these may be visible in the resulting 
