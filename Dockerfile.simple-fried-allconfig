@@ -7,22 +7,24 @@ MAINTAINER Trevor Dolby <tdolby@uk.ibm.com> (@tdolby)
 # Dockerfile for building an ACE server image with an MQ client and MQEndpoint policy plus flows to interact with MQ.
 #
 # The flows use SYSTEM.DEFAULT.LOCAL.QUEUE and rely on the remoteDefaultQueueManager policy setting for
-# MQ connectivity. The policy is called MQoC, and is copied in from eclipse-projects/MQOnCloudPolicies/MQoC.policyxml
-# during the image build process, baking in the details.
+# MQ connectivity. The policy is called remoteMQ, and is built at container start time from a template copied in from
+# templates/remoteMQ.policyxml during the image build process, baking in as few details as possible.
 #
 # User/password information is provided as environment variables at runtime, avoiding baking in security infomration.
 # Many container systems will have other mechanisms for passing in security information (Kubernetes secrets, etc) and
 # the environment variable approach used in this file is for illustration purposes only.
 #
-# The approach used here could be extended to include fried host/port/qmname information also, but in this case those
-# values are baked into the image.
+# This container has the configuration inline in the ENTRYPOINT and RUN scripts; this is so that it is very obvious
+# what is being done in various places, but it not necessarily a recommended approach. Shells scripts that perform
+# individual functions would allow for less-entangled source control histories (amongst other things), but would be
+# harder to follow for this simple example.
 #
 # The build uses MQ 9.1.0.0 by default, but can be changed to 9.2.2.0 (or any other version) by changing MQ_DOWNLOAD_URL.
 #
 # Build and run:
 #
-# docker build -t simple-fried-userpw --build-arg LICENSE=accept -f Dockerfile.simple-fried-userpw .
-# docker run -e MQUSER=user -e MQPASS=pwd -p 7600:7600 -p 7800:7800 --rm -ti simple-fried-userpw
+# docker build -t simple-fried-allconfig --build-arg LICENSE=accept -f Dockerfile.simple-fried-allconfig .
+# docker run -e MQQMNAME=qmname -e MQHOST=host -e MQPORT=port -e MQUSER=user -e MQPASS=pwd -p 7600:7600 -p 7800:7800 --rm -ti simple-fried-allconfig
 
 # Customise via build arguments if desired
 ARG DOWNLOAD_URL=http://public.dhe.ibm.com/ibmdl/export/pub/software/websphere/integration/11.0.0.12-ACE-LINUX64-DEVELOPER.tar.gz
@@ -52,19 +54,31 @@ USER 1001
 
 # Projects and policies
 ADD --chown=1001:mqbrkrs eclipse-projects /tmp/eclipse-projects
+ADD --chown=1001:mqbrkrs templates /tmp/templates
 
 # Pull in flows; would be good if we didn't need the BAR file!
 RUN bash -c ". /opt/ibm/ace-11/server/bin/mqsiprofile && \
     mqsipackagebar -w /tmp/eclipse-projects -a /tmp/AccessMQ.bar -k AccessMQ && \ 
     mqsibar -c -w /home/aceuser/ace-server -a /tmp/AccessMQ.bar"
 
-# Copy in policy and update server.conf.yaml; note that the MQ host and port are baked in, which is not
-# ideal for anything other than development use.
-RUN bash -c "cp -r /tmp/eclipse-projects/MQOnCloudPolicies /home/aceuser/ace-server/run/ && \
-    sed -i \"s/#remoteDefaultQueueManager: ''/remoteDefaultQueueManager: '{MQOnCloudPolicies}:MQoC'/g\" /home/aceuser/ace-server/server.conf.yaml"
+# Update server.conf.yaml and put the template into the correct place; note that the
+# MQ host and port will be passed in at runtime and will be used in place of the substitution
+# placeholders in the policy.
+#
+# In this case, we create the policy descriptor using static XML text; we could copy the file
+# from any policy project, but as long as the content is right it doesn't matter where it comes from.
+RUN bash -c "mkdir /home/aceuser/ace-server/run/MQPolicies && \ 
+    cp -r /tmp/templates/remoteMQ.policyxml /home/aceuser/ace-server/run/MQPolicies/ && \
+    echo '<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:policyProjectDescriptor xmlns=\"http://com.ibm.etools.mft.descriptor.base\" xmlns:ns2=\"http://com.ibm.etools.mft.descriptor.policyProject\"><references/></ns2:policyProjectDescriptor>' > /home/aceuser/ace-server/run/MQPolicies/policy.descriptor && \
+    sed -i \"s/#remoteDefaultQueueManager: ''/remoteDefaultQueueManager: '{MQPolicies}:remoteMQ'/g\" /home/aceuser/ace-server/server.conf.yaml"
 
 # Set entrypoint to run the server; printing out the contents of the work directory aids debugging
+#
+# A shell script could be used in place of this multi-line approach, which is only used here for clarity.
 ENTRYPOINT ["bash", "-c", ". /opt/ibm/ace-11/server/bin/mqsiprofile && \
  mqsisetdbparms --work-dir /home/aceuser/ace-server --resource mq::mqCredentials -u ${MQUSER} -p ${MQPASS} && \
+ sed -i \"s/MQQMNAME/${MQQMNAME}/g\" /home/aceuser/ace-server/run/MQPolicies/remoteMQ.policyxml && \
+ sed -i \"s/MQHOST/${MQHOST}/g\" /home/aceuser/ace-server/run/MQPolicies/remoteMQ.policyxml && \
+ sed -i \"s/MQPORT/${MQPORT}/g\" /home/aceuser/ace-server/run/MQPolicies/remoteMQ.policyxml && \
  find /home/aceuser/ace-server -type f -print && \
  IntegrationServer -w /home/aceuser/ace-server"]

@@ -16,7 +16,7 @@ MAINTAINER Trevor Dolby <tdolby@uk.ibm.com> (@tdolby)
 #
 # Build and run:
 #
-# docker build -t simple-baked-everything --build-arg LICENSE=accept --build-arg MQUSER=user --build-arg MQPASS=pwd -f Dockerfile .
+# docker build -t simple-baked-everything --build-arg LICENSE=accept --build-arg MQUSER=user --build-arg MQPASS=pwd -f Dockerfile.simple-baked-everything .
 # docker run -p 7600:7600 -p 7800:7800 --rm -ti simple-baked-everything
 
 # Customise via build arguments if desired

@@ -18,7 +18,7 @@ for local testing, but it would be most unwise to publish the resulting image to
 
 Instructions are included at the top of the Dockerfile, but the essential commands are of the form
 ```
-docker build -t simple-baked-everything --build-arg LICENSE=accept --build-arg MQUSER=user --build-arg MQPASS=pwd -f Dockerfile .
+docker build -t simple-baked-everything --build-arg LICENSE=accept --build-arg MQUSER=user --build-arg MQPASS=pwd -f Dockerfile.simple-baked-everything .
 docker run -p 7600:7600 -p 7800:7800 --rm -ti simple-baked-everything
 ```
 at which point it is possible to use curl (or other equivalent) to run the flows to ensure MQ connectivity 

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<policies>
+  <policy policyType="MQEndpoint" policyName="MQoC" policyTemplate="MQEndpoint">
+    <connection>CLIENT</connection>
+    <destinationQueueManagerName>MQQMNAME</destinationQueueManagerName>
+    <queueManagerHostname>MQHOST</queueManagerHostname>
+    <listenerPortNumber>MQPORT</listenerPortNumber>
+    <channelName>CLOUD.ADMIN.SVRCONN</channelName>
+    <securityIdentity>mqCredentials</securityIdentity>
+    <useSSL>false</useSSL>
+    <SSLPeerName></SSLPeerName>
+    <SSLCipherSpec></SSLCipherSpec>
+  </policy>
+</policies>
