@@ -6,6 +6,7 @@ Container | Description | Use
 | :--- | :--- | :--- |
 [simple-server](README-simple-server.md) | Most basic with no MQ | Sanity check for image build before proceeding to MQ images
 [simple-baked-everything](README-simple-baked-everything.md) | Baked-in MQ config | Local testing with MQ; contains credentials in image
+[simple-fried-userpw](README-simple-fried-userpw.md) | Baked-in MQ config; fried user/pw | Local testing with MQ
 
 
 ## Remote default QM overview
