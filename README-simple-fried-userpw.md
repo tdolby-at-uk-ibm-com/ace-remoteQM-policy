@@ -9,7 +9,7 @@ Before building, it is usually necessary to customise the hostname, port, and qu
 [MQoC policy](eclipse-projects/MQOnCloudPolicies/MQoC.policyxml) to avoid connection errors on startup.
 
 Note that as this image does not contain the credentials for the MQ user, the user/pw information must be
-passed it at container startup. Environment variables are used for this purpose, making it very easy to
+passed in at container startup. Environment variables are used for this purpose, making it very easy to
 see how the information is passed and used, but most container management systems will have other secure
 ways to handle similar information. The hostname, port number, and queue manager name are baked into the
 image at build time, and so that information is visible to anyone who can access the container image; this
