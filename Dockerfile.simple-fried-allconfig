@@ -76,9 +76,9 @@ RUN bash -c "mkdir /home/aceuser/ace-server/run/MQPolicies && \
 #
 # A shell script could be used in place of this multi-line approach, which is only used here for clarity.
 ENTRYPOINT ["bash", "-c", ". /opt/ibm/ace-11/server/bin/mqsiprofile && \
- mqsisetdbparms --work-dir /home/aceuser/ace-server --resource mq::mqCredentials -u ${MQUSER} -p ${MQPASS} && \
  sed -i \"s/MQQMNAME/${MQQMNAME}/g\" /home/aceuser/ace-server/run/MQPolicies/remoteMQ.policyxml && \
  sed -i \"s/MQHOST/${MQHOST}/g\" /home/aceuser/ace-server/run/MQPolicies/remoteMQ.policyxml && \
  sed -i \"s/MQPORT/${MQPORT}/g\" /home/aceuser/ace-server/run/MQPolicies/remoteMQ.policyxml && \
+ mqsisetdbparms --work-dir /home/aceuser/ace-server --resource mq::mqCredentials -u ${MQUSER} -p ${MQPASS} && \
  find /home/aceuser/ace-server -type f -print && \
  IntegrationServer -w /home/aceuser/ace-server"]
