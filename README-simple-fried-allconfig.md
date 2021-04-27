@@ -9,6 +9,11 @@ This container does not require customisation of MQ policies at build time, as t
 is passed in at container start time. User/pw, QM name, hostname, and port are all passed in, and used to
 create credentials and replace template parameters in the remoteMQ.policyxml provided in the templates directory.
 
+Note that user/pw information is passed in as environment variables, making it very easy to
+see how the information is passed and used, but most container management systems will have other secure
+ways to handle similar information (see [here](https://github.com/ot4i/ace-demo-pipeline/blob/demo-pipeline-20-08/scripts/preprod-container/init-creds.sh)
+for one example using Kubernetes). 
+
 ![Picture of stages](pictures/fried-allconfig-picture.png)
 
 ### Instructions
