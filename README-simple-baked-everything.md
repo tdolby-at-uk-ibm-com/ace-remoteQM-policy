@@ -15,6 +15,9 @@ Docker image even though they appear to be used and discarded in the Docckerfile
 for local testing, but it would be most unwise to publish the resulting image to a public registry on Dockerhub 
 (for example).
 
+![Picture of stages](pictures/baked-everything-picture.png)
+
+### Instructions
 
 Instructions are included at the top of the Dockerfile, but the essential commands are of the form
 ```

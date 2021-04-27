@@ -16,6 +16,10 @@ image at build time, and so that information is visible to anyone who can access
 information is much less confidential than user/pw information, but it may not be desirable to have it
 available in a public registry on Dockerhub.
 
+![Picture of stages](pictures/fried-userpw-picture.png)
+
+### Instructions
+
 Instructions are included at the top of the Dockerfile, but the essential commands are of the form
 ```
 docker build -t simple-fried-userpw --build-arg LICENSE=accept -f Dockerfile.simple-fried-userpw .

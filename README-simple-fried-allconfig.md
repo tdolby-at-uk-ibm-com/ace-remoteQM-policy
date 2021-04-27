@@ -9,6 +9,10 @@ This container does not require customisation of MQ policies at build time, as t
 is passed in at container start time. User/pw, QM name, hostname, and port are all passed in, and used to
 create credentials and replace template parameters in the remoteMQ.policyxml provided in the templates directory.
 
+![Picture of stages](pictures/fried-allconfig-picture.png)
+
+### Instructions
+
 Instructions are included at the top of the Dockerfile, but the essential commands are of the form
 ```
 docker build -t simple-fried-allconfig --build-arg LICENSE=accept -f Dockerfile.simple-fried-allconfig .
