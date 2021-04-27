@@ -24,7 +24,7 @@ available for independent servers.
 
 For the MQ nodes, the configuration is the same as it would be for a local default queue manager:
 
-![MQInput node properties](mqinput-default-mq.png)
+![MQInput node properties](pictures/mqinput-default-mq.png)
  
 and although the properties say "Local queue manager" for historical reasons, the node will in fact use a remote default
 queue manager (and will fail to start if no queue manager (either local or remote) is configured).
