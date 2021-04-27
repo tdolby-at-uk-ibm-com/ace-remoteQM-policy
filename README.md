@@ -9,6 +9,7 @@ Container | Description | Use
 [simple-fried-userpw](README-simple-fried-userpw.md) | Baked-in MQ config; fried user/pw | Local testing with MQ
 [simple-fried-allconfig](README-simple-fried-allconfig.md) | No MQ details baked in | Local testing with MQ
 
+All but the first use example flows to illustrate the use of MQ; see [README-flows.md](README-flows.md) for more information.
 
 ## Remote default QM overview
 ACE and predecessor products have always been able to use MQ, both for explicit messaging (MQ nodes in a flow) and implicit 

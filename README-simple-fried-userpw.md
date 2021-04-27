@@ -34,6 +34,8 @@ has been successful; the flows listen on URLs /putFlow and /getFlow and behave a
 {"messageText":"This is an MQ message from putFlow"}
 ```
 
+See [README-flows.md](README-flows.md) for more information on the flows themselves.
+
 This image is provided as a way to ensure that the server in the container can connect to MQ; it is not intended 
 to be used in production.
 
