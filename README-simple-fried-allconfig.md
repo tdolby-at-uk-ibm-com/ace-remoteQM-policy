@@ -78,7 +78,7 @@ main checker destroyed before initialisation completed, latest stage was MQ defa
 ### Invalid setdbparms credential name
 If the mqsisetdbparms alias referenced by the MQEndpoint policy does not exist (as opposed
 to containing incorrect user/pw information), the server will attempt to start and then
-fail with a "broker connection" error as follows:
+fail with a "broken connection" error as follows:
 ```
 .....2021-04-26 13:31:02.043490: .2021-04-26 13:31:02.043680: BIP1990I: Integration server 'ace-server' starting initialization; version '11.0.0.12' (64-bit) 
 ...................................2021-04-26 13:31:04.052074: BIP2124E: The integration server has detected a condition on thread number '94' with name 'MQQM Monitor Thread', which requires it to shutdown and restart. 

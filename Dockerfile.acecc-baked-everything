@@ -1,0 +1,45 @@
+# Copyright (c) 2021 Open Technologies for Integration
+# Licensed under the MIT license (see LICENSE for details)
+
+FROM ibmcom/ace-server:latest
+MAINTAINER Trevor Dolby <tdolby@uk.ibm.com> (@tdolby)
+
+# Dockerfile for building an ACE server image with an MQ client and MQEndpoint policy plus flows to interact with MQ.
+#
+# The flows use SYSTEM.DEFAULT.LOCAL.QUEUE and rely on the remoteDefaultQueueManager policy setting for
+# MQ connectivity. The policy is called MQoC, and is copied in from eclipse-projects/MQOnCloudPolicies/MQoC.policyxml
+# during the image build process, baking in the details. User/password information is provided as build arguments for
+# this file, and those are also baked in; for this reason, any image built using this dockerfile should not be pushed
+# to any public registry, as the credentials can be recovered from the image.
+#
+# This image uses the ACE certified container as a base.
+#
+# Build and run:
+#
+# docker build -t acecc-baked-everything --build-arg MQUSER=user --build-arg MQPASS=pwd -f Dockerfile.acecc-baked-everything .
+# docker run -p 7600:7600 -p 7800:7800 --rm -e LICENSE=accept -ti acecc-baked-everything
+
+
+# Change these from command line as above
+ARG MQUSER=dummyUser
+ARG MQPASS=dummyPass
+
+# Projects and policies
+ADD --chown=aceuser:aceuser eclipse-projects /tmp/eclipse-projects
+
+# Pull in flows and populate the run directory
+RUN bash -c "mqsipackagebar -w /tmp/eclipse-projects -a /tmp/AccessMQ.bar -k AccessMQ && \ 
+    mqsibar -c -w /home/aceuser/ace-server -a /tmp/AccessMQ.bar"
+
+# Copy in policy; note that the MQ host and port are baked in, which is not
+# ideal for anything other than development use.
+RUN bash -c "mkdir -p /home/aceuser/initial-config/policy && \
+    cp -r /tmp/eclipse-projects/MQOnCloudPolicies/* /home/aceuser/initial-config/policy/"
+
+# Set the remote default QM policy name; note that the DefaultPolicies policy project must be specified
+RUN bash -c "mkdir -p /home/aceuser/initial-config/serverconf && \
+    echo \"remoteDefaultQueueManager: '{DefaultPolicies}:MQoC'\" > /home/aceuser/initial-config/serverconf/server.conf.yaml"
+
+# Add credentials; this makes the resulting image unsuitable for public registries! Use with caution!
+RUN bash -c "mkdir -p /home/aceuser/initial-config/setdbparms && \
+    echo \"mq::mqCredentials ${MQUSER} ${MQPASS}\" > /home/aceuser/initial-config/setdbparms/setdbparms.txt"
