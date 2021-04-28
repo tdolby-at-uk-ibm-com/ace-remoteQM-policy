@@ -11,7 +11,8 @@ Before building, it is usually necessary to customise the hostname, port, and qu
 Note that as this image does not contain the credentials for the MQ user, the user/pw information must be
 passed in at container startup. Environment variables are used for this purpose, making it very easy to
 see how the information is passed and used, but most container management systems will have other secure
-ways to handle similar information. The hostname, port number, and queue manager name are baked into the
+ways to handle similar information (see [here](https://github.com/ot4i/ace-demo-pipeline/blob/demo-pipeline-20-08/scripts/preprod-container/init-creds.sh)
+for one example using Kubernetes). The hostname, port number, and queue manager name are baked into the
 image at build time, and so that information is visible to anyone who can access the container image; this
 information is much less confidential than user/pw information, but it may not be desirable to have it
 available in a public registry on Dockerhub.
