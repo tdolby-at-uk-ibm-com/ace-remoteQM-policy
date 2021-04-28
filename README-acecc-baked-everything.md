@@ -10,9 +10,9 @@ build arguments:
 Before building, it is usually necessary to customise the hostname, port, and queue manager name in the 
 [MQoC policy](eclipse-projects/MQOnCloudPolicies/MQoC.policyxml) to avoid connection errors on startup.
 
-
-As the ACEcc startup code reads from /home/aceuser/initial-config, the MQ policy will appear in the work
-directory in overrides/DefaultPolicies , rather than in run/MQOnCloudPolicies, and an overrides/server.conf.yaml
+ACEcc is designed to work with a Kubernetes operator, but can also be run standalone. The ACEcc startup code
+reads from /home/aceuser/initial-config, so the MQ policy for this image will appear in the work directory 
+in overrides/DefaultPolicies, rather than in run/MQOnCloudPolicies, and an overrides/server.conf.yaml
 file directs the server to DefaultPolicies to ensure the MQoC policy is picked up.
 
 Note that this image will contain the credentials for the MQ user, and these may be visible in the resulting 
