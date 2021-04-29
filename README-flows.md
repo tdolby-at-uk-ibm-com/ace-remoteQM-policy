@@ -20,7 +20,7 @@ and after a successful MQPUT will return a JSON success message as a reply.
 ### Get Flow
 ![Get flow picture](pictures/getflow.png)
 
-The second message flow can also be called via HTTP (UTL /getFlow) to get a message from SYSTEM.DEFAULT.LOCAL.QUEUE
+The second message flow can also be called via HTTP (URL /getFlow) to get a message from SYSTEM.DEFAULT.LOCAL.QUEUE
 and return the contents in the HTTP Reply
 
 
