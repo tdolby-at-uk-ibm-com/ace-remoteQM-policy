@@ -49,6 +49,14 @@ RUN useradd --uid 1001 --create-home --home-dir /home/aceuser --shell /bin/bash 
   && su - aceuser -c "export LICENSE=accept && . /opt/ibm/ace-11/server/bin/mqsiprofile && mqsicreateworkdir /home/aceuser/ace-server" \
   && echo ". /opt/ibm/ace-11/server/bin/mqsiprofile" >> /home/aceuser/.bashrc
 
+# Keep podman happy; it doesn't recognise the mqbrkrs membership of the new aceuser, as we've only just added the user.
+# Not doing this step results in errors like 
+# 
+# BIP2113E: IBM App Connect Enterprise internal error: diagnostic information ''Permission denied'', '13', ''/var/mqsi/registry/utility/HASharedWorkPath''. 
+#
+# further down. Docker doesn't mind us doing this, so everyone is happy.
+RUN chown -R aceuser /var/mqsi
+
 # aceuser
 USER 1001
 
